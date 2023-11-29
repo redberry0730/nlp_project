@@ -1,69 +1,52 @@
-import requests
-import sys
 import re
 import nltk
 from nltk.corpus import stopwords
 from wordcloud import WordCloud
-from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
+import json
+from bs4 import BeautifulSoup
+from nltk import pos_tag, word_tokenize
 
-# Here's a Category page for Simple English Wikipedia
-#URL = "https://en.wikipedia.org/wiki/Category:Endangered_animals"
-URL = sys.argv[1]
+messi_file_path = 'data/messi.json'
+lebron_file_path = 'data/lebron.json'
 
-# Get that page.
-page = requests.get(URL)
+with open(messi_file_path, 'r') as file:
+    messidata = json.load(file)
 
-# Now parse the html.
+with open(lebron_file_path, 'r') as file:
+    lebrondata = json.load(file)
+
+messistring = ' '.join(messidata)
+lebronstring = ' '.join(lebrondata)
+
+
+
+
+
 soup = BeautifulSoup(page.content, "html.parser")
 
-# List for storing the links to pages we want to get.
-cat_pages = []
+for p in soup.find_all("p"):
+    fulltext.appned(p.get_text())
 
-# Find the heading associated with "Pages in category"
-# Depending on the Category page you are looking at.
-# you might need to change the text you want to match.
-for h2 in soup.find_all("h2"):
-    if "Pages in category" in h2.text:
-
-        # Find all subsequent a href tags. 
-        for a in h2.find_all_next("a", href=True, limit=int(sys.argv[2])):
-            if "wiki" in a["href"]:
-                cat_pages.append(a["href"])
+print(fulltext)
+                    
 
 
-pagestrings = []
-
-for c in cat_pages:
-
-    # You need to add the rest of the URL to the beginning.
-    URL = "https://en.wikipedia.org/" + c
-
-    # Go get it and parse the html.
-    page = requests.get(URL)
-    newsoup = BeautifulSoup(page.content, "html.parser")
-
-    # Print out all the text.
-    mystring = ""
-    for info in newsoup.find_all("p"):
-        mystring = mystring + " " + info.get_text()
 
 
-    mystring = re.sub("\n", " ", mystring)
-    mystring = re.sub("\s+", " ", mystring)
-    mystring = re.sub("\[.*?\]", " ", mystring)
 
-    pagestrings.append(mystring)
+messitokens = nltk.word_tokenize(messistring)
+lebrontokens = nltk.word_tokenize(lebronstring)
 
 
-del pagestrings[0]
 
 
-## TOKENIZE                                                                                         
-tokenlists = []
-for s in pagestrings:
-    alltokens = nltk.word_tokenize(s)
-    tokenlists.append(alltokens)
+
+
+
+
+
+
 
 ## REMOVE STOP WORDS                                                                                
 
