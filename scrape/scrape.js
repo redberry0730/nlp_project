@@ -2,10 +2,22 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
 
-const messiUrl = 'https://api-app.espn.com/allsports/apis/v1/now?region=us&lang=en&contentorigin=espn&limit=50&contentcategories=dc5f8d51-332b-0ab2-b4b0-c97efdc624e0&offset=';
-const lebronUrl = 'https://www.transfermarkt.com/lebron-james/profil/spieler/3504';
+const messiID = 'dc5f8d51-332b-0ab2-b4b0-c97efdc624e0';
+const lebronID = '1f6592b3-ff53-d321-8dc5-6038d48c1786';
+const mahomesID = '37d87523-280a-9d4a-0adb-22cfc6d3619c';
+const crosbyID = '706fa356-342c-1e1e-dce4-1bdd4d70a33f';
+const troutID = 'e1be67bf-3688-8bd6-9bd6-c01d0e34e119';
 
-(async function scrapeESPN(url){
+(async function main(){
+    await scrapeESPN('messi', messiID);
+    await scrapeESPN('lebron', lebronID);
+    await scrapeESPN('mahomes', mahomesID);
+    await scrapeESPN('crosby', crosbyID);
+    await scrapeESPN('trout', troutID);
+})()
+
+async function scrapeESPN(name, id){
+    let url = `https://api-app.espn.com/allsports/apis/v1/now?region=us&lang=en&contentorigin=espn&limit=50&contentcategories=${id}&offset=`
     const links = []
     const stories = []
     offset = 0
@@ -15,8 +27,9 @@ const lebronUrl = 'https://www.transfermarkt.com/lebron-james/profil/spieler/350
         let feed = response.data.feed;
         if(feed.length == 0) break;
         feed.forEach((item) => {
-            if (item.links.api.news)
-            links.push(item.links.api.news.href);
+            if (item.links.api && item.links.api.news){
+                links.push(item.links.api.news.href);
+            }
         });    
         offset += 50;    
     }   
@@ -31,7 +44,7 @@ const lebronUrl = 'https://www.transfermarkt.com/lebron-james/profil/spieler/350
 
     const jsonData = JSON.stringify(stories, null, 2);
 
-    fs.writeFile('messi.json', jsonData, (err) => {
+    fs.writeFile(`../data/${name}.json`, jsonData, (err) => {
         if (err) {
             console.error('Error writing to JSON file:', err);
         } else {
@@ -39,7 +52,7 @@ const lebronUrl = 'https://www.transfermarkt.com/lebron-james/profil/spieler/350
         }
     });
 
-    console.log('stories', stories.length)
+    console.log(name, 'stories', stories.length)
     sum = 0
     for(let story of stories){
         len = story.split(" ").length
@@ -49,4 +62,4 @@ const lebronUrl = 'https://www.transfermarkt.com/lebron-james/profil/spieler/350
     console.log('avg', sum/stories.length)
     console.log("total", sum)
 
-})(messiUrl)
+}
