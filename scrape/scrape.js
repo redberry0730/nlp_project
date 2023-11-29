@@ -48,7 +48,7 @@ async function scrapeESPN(name, id){
         if (err) {
             console.error('Error writing to JSON file:', err);
         } else {
-            console.log('Stories saved to stories.json');
+            console.log(`Stories saved to ${name}.json`);
         }
     });
 
