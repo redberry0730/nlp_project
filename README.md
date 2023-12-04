@@ -2,7 +2,7 @@
 
 ## Data Scraping
 
-The code for scaping the data from ESPN can be found here:
+The code for scaping the data from ESPN can be found here (Node Project):
 `/scrape/scrape.js`
 
 ## Data Output
